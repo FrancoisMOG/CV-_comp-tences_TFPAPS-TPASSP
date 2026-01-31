@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Analyse de Profil et Activité CV</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    /* --- STYLES ÉCRAN CONSIGNES --- */
+    :root {
+      --primary-blue-c: #1e3a8a;
+      --accent-blue-c: #3b82f6;
+      --bg-slate-c: #e2e8f0;
+      --text-main-c: #1e293b;
+      --text-light-c: #475569;
+    }
+
+    #consignes-screen {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-slate-c);
+      color: var(--text-main-c);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .consignes-container {
+      background: white;
+      max-width: 850px;
+      width: 100%;
+      border-radius: 18px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+      overflow: hidden;
+      animation: slideIn 0.6s ease-out;
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .consignes-container header {
+      background: var(--primary-blue-c);
+      color: white;
+      padding: 35px;
+      text-align: center;
+    }
+
+    .consignes-container header h1 { font-size: 1.6rem; margin-bottom: 10px; margin-top: 0; }
+    .consignes-container .subtitle { font-weight: 300; opacity: 0.85; letter-spacing: 0.5px; }
+
+    .main-content-c { padding: 40px; }
+
+    .step-section {
+      margin-bottom: 35px;
+      opacity: 0;
+      transition: all 0.6s ease;
+      transform: translateY(20px);
+    }
+    .step-section.active { opacity: 1; transform: translateY(0); }
+
+    .title-flex-c {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--primary-blue-c);
+      font-weight: 700;
+      margin-bottom: 15px;
+      text-transform: uppercase;
+      font-size: 0.9rem;
+    }
+
+    .info-grid-c {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 25px;
+    }
+
+    .info-card-c {
+      background: #f8fafc;
+      padding: 20px;
+      border-radius: 12px;
+      border-left: 4px solid var(--accent-blue-c);
+    }
+
+    .alert-banner-c {
+      background: #fff7ed;
+      border: 1px solid #fed7aa;
+      color: #9a3412;
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 20px;
+      font-size: 0.9rem;
+    }
+
+    .info-card-c ul { list-style: none; padding: 0; margin: 0; }
+    .info-card-c li {
+      font-size: 0.9rem;
+      color: var(--text-light-c);
+      margin-bottom: 8px;
+      padding-left: 20px;
+      position: relative;
+    }
+    .info-card-c li::before {
+      content: "•";
+      color: var(--accent-blue-c);
+      position: absolute;
+      left: 0;
+      font-weight: bold;
+    }
+
+    .score-table-c {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 15px;
+    }
+    .score-item-c {
+      flex: 1;
+      text-align: center;
+      padding: 10px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .btn-launch {
+      background: var(--primary-blue-c);
+      color: white;
+      border: none;
+      padding: 15px 45px;
+      font-size: 1rem;
+      font-weight: 700;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .btn-launch:hover {
+      background: var(--accent-blue-c);
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(59, 130, 246, 0.4);
+    }
+
+    /* --- STYLES ÉCRAN ACTIVITÉ (INDEX) --- */
+    #activity-screen {
+      display: none;
+      background: #e2e8f0;
+      padding: 40px;
+      min-height: 100vh;
+      font-family: "Inter", sans-serif;
+    }
+
+    .app-container {
+      max-width: 1300px;
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1fr 1.6fr;
+      gap: 24px;
+      margin: 0 auto;
+    }
+
+    .blocks-panel {
+      background: #1e3a8a;
+      color: #f1f5f9;
+      padding: 20px;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+    }
+
+    .blocks-panel h2 { font-size: 1.2rem; margin-bottom: 6px; }
+    .blocks-panel p { font-size: 0.9rem; margin-bottom: 12px; color: #cbd5e1; }
+
+    .blocks-list {
+      max-height: 75vh;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding-right: 6px;
+    }
+
+    .block-item {
+      background: #3b82f6;
+      color: white;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #1d4ed8;
+      cursor: grab;
+      font-size: 0.85rem;
+      transition: 0.15s;
+      position: relative;
+    }
+
+    .block-item:hover { background: #2563eb; transform: translateY(-2px); }
+    .block-item.dragging { opacity: 0.7; cursor: grabbing; box-shadow: 0 8px 20px rgba(0,0,0,0.4); }
+
+    .block-remove {
+      position: absolute;
+      top: 4px; right: 6px;
+      background: #ef4444;
+      color: white;
+      border-radius: 50%;
+      width: 18px; height: 18px;
+      font-size: 0.7rem;
+      display: flex; justify-content: center; align-items: center;
+      cursor: pointer;
+    }
+
+    .cv-container {
+      background: white;
+      padding: 26px;
+      border-radius: 18px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    #pdfHeader { text-align: center; margin-bottom: 10px; display: none; }
+    #pdfHeader h1 { color: #1e3a8a; font-size: 1.4rem; margin-bottom: 4px; }
+    #pdfHeader p { color: #475569; font-size: 0.9rem; }
+
+    .cv-header { display: flex; gap: 18px; align-items: center; border-bottom: 1px solid #e5e7eb; padding-bottom: 14px; }
+    .avatar { width: 70px; height: 70px; border-radius: 50%; background: #2563eb; color: white; display: flex; justify-content: center; align-items: center; font-size: 1.4rem; font-weight: 700; }
+    .cv-name { font-size: 1.4rem; font-weight: 700; color: #1e293b; }
+    .cv-title { font-size: 0.95rem; color: #475569; }
+
+    .cv-body { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .cv-section-title { font-size: 1rem; font-weight: 600; margin-bottom: 6px; color: #1e293b; }
+
+    .drop-zone { background: #f8fafc; border: 2px dashed #60a5fa; border-radius: 12px; padding: 12px; min-height: 140px; display: flex; flex-direction: column; gap: 8px; transition: 0.2s; }
+    .drop-zone.highlight { background: #dbeafe; border-color: #2563eb; }
+    .drop-placeholder { font-size: 0.8rem; color: #94a3b8; font-style: italic; }
+
+    .drop-zone .block-item { background: #e0e7ff !important; color: #1e3a8a !important; border-color: #93c5fd !important; }
+
+    .controls { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; flex-wrap: wrap; gap: 10px; }
+    .btn { padding: 8px 16px; border-radius: 999px; border: none; cursor: pointer; font-size: 0.85rem; font-weight: 600; }
+    .btn-primary { background: #2563eb; color: white; }
+    .btn-secondary { background: #e2e8f0; color: #1e293b; }
+
+    .score-badge { background: #1e293b; color: white; padding: 4px 10px; border-radius: 999px; font-size: 0.8rem; }
+    .feedback { font-size: 0.85rem; margin-top: 6px; }
+    .feedback.good { color: #15803d; }
+    .feedback.medium { color: #b45309; }
+    .feedback.bad { color: #b91c1c; }
+
+    .modal { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.55); justify-content: center; align-items: center; }
+    .modal-content { background: white; padding: 24px; border-radius: 14px; width: 420px; max-width: 90%; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
+
+    @media print {
+      #activity-screen { padding: 0; background: white; }
+      .blocks-panel { display: none; }
+      .app-container { grid-template-columns: 1fr; max-width: 800px; margin: 0 auto; }
+      #pdfHeader { display: block !important; }
+    }
+  </style>
+</head>
+<body style="margin:0;">
+
+  <div id="consignes-screen">
+    <div class="consignes-container">
+      <header>
+        <div class="subtitle">EXERCICE DE SYNTHÈSE</div>
+        <h1>Identifier les compétences du poste ciblé</h1>
+      </header>
+
+      <main class="main-content-c">
+        <section class="step-section" id="step1">
+          <div class="title-flex-c">🎯 Objectifs pédagogiques</div>
+          <div class="info-grid-c">
+            <div class="info-card-c">
+              <ul>
+                <li>Analyser un profil métier spécifique</li>
+                <li>Distinguer les compétences prioritaires</li>
+              </ul>
+            </div>
+            <div class="info-card-c">
+              <ul>
+                <li>Éliminer les compétences hors-sujet</li>
+                <li>Optimiser un CV pour un recruteur</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section class="step-section" id="step2">
+          <div class="title-flex-c">🧩 Description du défi</div>
+          <p style="font-size: 0.95rem; line-height: 1.6; color: var(--text-light-c);">
+            Vous devez construire le CV d'un candidat pour un poste spécifique. Pour réussir, vous devrez faire le tri parmi <strong>37 blocs de compétences</strong>.
+          </p>
+          <div class="alert-banner-c">
+            <strong>⚠️ Vigilance requise :</strong> Certaines compétences sont volontairement intégrées pour tester votre capacité à identifier le cœur d'un métier.
+          </div>
+        </section>
+
+        <section class="step-section" id="step3">
+          <div class="title-flex-c">✅ Consignes de sélection</div>
+          <div class="info-grid-c">
+            <div>
+              <p style="font-weight: 600; margin-bottom: 10px;">Compétences Professionnelles</p>
+              <ul class="info-card-c" style="border-left-color: #15803d;">
+                <li>Choisir <strong>10 blocs</strong> corrects</li>
+                <li>Parmi 25 propositions</li>
+              </ul>
+            </div>
+            <div>
+              <p style="font-weight: 600; margin-bottom: 10px;">Compétences Personnelles</p>
+              <ul class="info-card-c" style="border-left-color: #b45309;">
+                <li>Choisir <strong>6 blocs</strong> pertinents</li>
+                <li>Parmi 12 propositions</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section class="step-section" id="step4">
+          <div class="title-flex-c">🧠 Évaluation du profil</div>
+          <div class="score-table-c">
+            <div class="score-item-c" style="background: #fee2e2; color: #b91c1c;">0-6 : Insuffisant</div>
+            <div class="score-item-c" style="background: #fef3c7; color: #b45309;">7-12 : Profil Correct</div>
+            <div class="score-item-c" style="background: #dcfce7; color: #15803d;">13-16 : Expert Métier</div>
+          </div>
+        </section>
+
+        <div style="text-align: center; padding-top: 20px;">
+          <button class="btn-launch" onclick="startActivity()">DÉCOUVRIR LE POSTE ET DÉMARRER</button>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <div id="activity-screen">
+    <div class="app-container">
+      <aside class="blocks-panel">
+        <h2>Blocs de compétences</h2>
+        <p>Glisse les blocs dans les bonnes zones du CV.</p>
+        <div class="blocks-list" id="blocksList">
+          <div class="block-item" draggable="true" data-id="pro1">Connaissance des rondes et contrôles d’accès</div>
+          <div class="block-item" draggable="true" data-id="pro2">Gestion des alarmes et levées de doute</div>
+          <div class="block-item" draggable="true" data-id="pro3">Réactivité en cas d’incident</div>
+          <div class="block-item" draggable="true" data-id="pro4">Capacité à garder son sang‑froid</div>
+          <div class="block-item" draggable="true" data-id="pro5">Vigilance et attention aux détails</div>
+          <div class="block-item" draggable="true" data-id="pro6">Détection des comportements suspects</div>
+          <div class="block-item" draggable="true" data-id="pro7">Communication claire et professionnelle</div>
+          <div class="block-item" draggable="true" data-id="pro8">Rédaction de rapports d’intervention</div>
+          <div class="block-item" draggable="true" data-id="pro9">Respect strict des procédures</div>
+          <div class="block-item" draggable="true" data-id="pro10">Utilisation des systèmes de vidéosurveillance</div>
+          <div class="block-item" draggable="true" data-id="pro11">Supervision proactive des zones à faible visibilité</div>
+          <div class="block-item" draggable="true" data-id="pro12">Analyse comportementale de premier niveau</div>
+          <div class="block-item" draggable="true" data-id="pro13">Gestion structurée des flux de visiteurs</div>
+          <div class="block-item" draggable="true" data-id="pro14">Contrôle méthodique des dispositifs anti‑intrusion</div>
+          <div class="block-item" draggable="true" data-id="pro15">Coordination des interventions multi‑sites</div>
+          <div class="block-item" draggable="true" data-id="pro16">Application renforcée des protocoles de confidentialité</div>
+          <div class="block-item" draggable="true" data-id="pro17">Évaluation rapide des risques environnementaux</div>
+          <div class="block-item" draggable="true" data-id="pro18">Gestion préventive des situations de tension</div>
+          <div class="block-item" draggable="true" data-id="pro19">Surveillance technique des zones sensibles</div>
+          <div class="block-item" draggable="true" data-id="pro20">Rédaction optimisée des rapports d’incident</div>
+          <div class="block-item" draggable="true" data-id="pro21">Pilotage des rondes intelligentes</div>
+          <div class="block-item" draggable="true" data-id="pro22">Vérification avancée des équipements de sécurité</div>
+          <div class="block-item" draggable="true" data-id="pro23">Gestion discrète des situations délicates</div>
+          <div class="block-item" draggable="true" data-id="pro24">Communication en environnement bruyant</div>
+          <div class="block-item" draggable="true" data-id="pro25">Adaptation immédiate aux changements de consignes</div>
+
+          <div class="block-item" draggable="true" data-id="perso1">Fiabilité</div>
+          <div class="block-item" draggable="true" data-id="perso2">Maîtrise de soi</div>
+          <div class="block-item" draggable="true" data-id="perso3">Intégrité</div>
+          <div class="block-item" draggable="true" data-id="perso4">Autonomie</div>
+          <div class="block-item" draggable="true" data-id="perso5">Politesse et courtoisie</div>
+          <div class="block-item" draggable="true" data-id="perso6">Esprit d’équipe</div>
+          <div class="block-item" draggable="true" data-id="perso7">Créativité artistique</div>
+          <div class="block-item" draggable="true" data-id="perso8">Imagination développée</div>
+          <div class="block-item" draggable="true" data-id="perso9">Goût prononcé pour l’expérimentation</div>
+          <div class="block-item" draggable="true" data-id="perso10">Sensibilité émotionnelle élevée</div>
+          <div class="block-item" draggable="true" data-id="perso11">Capacité à improviser</div>
+          <div class="block-item" draggable="true" data-id="perso12">Esprit contemplatif</div>
+        </div>
+      </aside>
+
+      <main class="cv-container">
+        <div id="pdfHeader">
+          <h1>Résultat de l’activité – Agent de sécurité</h1>
+          <p id="pdfDate"></p>
+        </div>
+        <header class="cv-header">
+          <div class="avatar">JD</div>
+          <div>
+            <div class="cv-name">Julien DUPONT</div>
+            <div class="cv-title">Candidat au poste d’agent de sécurité</div>
+          </div>
+        </header>
+        <section class="cv-body">
+          <div>
+            <div class="cv-section-title">Compétences personnelles</div>
+            <div class="drop-zone" id="dropPerso">
+              <div class="drop-placeholder">Dépose ici les qualités personnelles adaptées.</div>
+            </div>
+          </div>
+          <div>
+            <div class="cv-section-title">Compétences professionnelles</div>
+            <div class="drop-zone" id="dropPro">
+              <div class="drop-placeholder">Dépose ici les compétences professionnelles adaptées.</div>
+            </div>
+          </div>
+        </section>
+        <div class="controls">
+          <button class="btn btn-primary" id="checkBtn">Corriger</button>
+          <button class="btn btn-secondary" id="resetBtn">Réinitialiser</button>
+          <button class="btn btn-secondary" id="consignesBtn">Consignes</button>
+          <button class="btn btn-primary" id="pdfBtn">Exporter PDF</button>
+          <span class="score-badge" id="scoreBadge">Score : 0 / 16</span>
+        </div>
+        <div class="feedback" id="feedbackText">Glisse les blocs dans les zones du CV, puis clique sur Corriger.</div>
+      </main>
+    </div>
+  </div>
+
+  <div id="modalConsignes" class="modal">
+    <div class="modal-content">
+      <h2>Consignes</h2>
+      <p>Sélectionne et dépose dans le CV uniquement les compétences réellement pertinentes pour un agent de sécurité.<br><br>
+        • 10 compétences professionnelles attendues<br>
+        • 6 compétences personnelles attendues<br><br>
+        Clique ensuite sur "Corriger" pour obtenir ton score.</p>
+      <button id="closeModal" class="btn btn-primary">Fermer</button>
+    </div>
+  </div>
+
+  <script>
+    /* JS CONSIGNES */
+    function showSteps() {
+      const steps = document.querySelectorAll('.step-section');
+      steps.forEach((step, index) => {
+        setTimeout(() => {
+          step.classList.add('active');
+        }, index * 250);
+      });
+    }
+
+    function startActivity() {
+      const container = document.querySelector('.consignes-container');
+      container.style.transition = "0.4s";
+      container.style.opacity = "0";
+      container.style.transform = "scale(0.95)";
+      
+      setTimeout(() => {
+        document.getElementById('consignes-screen').style.display = 'none';
+        document.getElementById('activity-screen').style.display = 'block';
+        window.scrollTo(0, 0);
+      }, 450);
+    }
+
+    /* JS ACTIVITÉ (SANS MODIFICATION) */
+    document.addEventListener("DOMContentLoaded", () => {
+      showSteps(); // Lance l'animation des consignes
+
+      const goodPro = ["pro1","pro2","pro3","pro4","pro5","pro6","pro7","pro8","pro9","pro10"];
+      const goodPerso = ["perso1","perso2","perso3","perso4","perso5","perso6"];
+      const blocksList = document.getElementById("blocksList");
+      const dropZones = document.querySelectorAll(".drop-zone");
+      const checkBtn = document.getElementById("checkBtn");
+      const resetBtn = document.getElementById("resetBtn");
+      const consignesBtn = document.getElementById("consignesBtn");
+      const pdfBtn = document.getElementById("pdfBtn");
+      const scoreBadge = document.getElementById("scoreBadge");
+      const feedbackText = document.getElementById("feedbackText");
+      const modal = document.getElementById("modalConsignes");
+      const closeModal = document.getElementById("closeModal");
+      const pdfHeader = document.getElementById("pdfHeader");
+      const pdfDate = document.getElementById("pdfDate");
+      let dragged = null;
+
+      function shuffleBlocks() {
+        const items = Array.from(blocksList.children);
+        for (let i = items.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [items[i], items[j]] = [items[j], items[i]];
+        }
+        items.forEach(el => blocksList.appendChild(el));
+      }
+
+      function addRemoveButton(block) {
+        if (block.querySelector(".block-remove")) return;
+        const btn = document.createElement("div");
+        btn.className = "block-remove"; btn.textContent = "×";
+        btn.addEventListener("click", () => { btn.remove(); blocksList.appendChild(block); });
+        block.appendChild(btn);
+      }
+
+      function removeRemoveButton(block) {
+        const btn = block.querySelector(".block-remove");
+        if (btn) btn.remove();
+      }
+
+      function activateDragAndDrop() {
+        const blocks = document.querySelectorAll(".block-item");
+        blocks.forEach(block => {
+          block.setAttribute("draggable", "true");
+          block.addEventListener("dragstart", () => { dragged = block; block.classList.add("dragging"); });
+          block.addEventListener("dragend", () => { dragged = null; block.classList.remove("dragging"); });
+        });
+        dropZones.forEach(zone => {
+          zone.addEventListener("dragover", e => { e.preventDefault(); zone.classList.add("highlight"); });
+          zone.addEventListener("dragleave", () => zone.classList.remove("highlight"));
+          zone.addEventListener("drop", e => {
+            e.preventDefault(); zone.classList.remove("highlight");
+            if (dragged) {
+              const placeholder = zone.querySelector(".drop-placeholder");
+              if (placeholder) placeholder.remove();
+              zone.appendChild(dragged); addRemoveButton(dragged);
+            }
+          });
+        });
+        blocksList.addEventListener("dragover", e => e.preventDefault());
+        blocksList.addEventListener("drop", e => {
+          e.preventDefault();
+          if (dragged) { removeRemoveButton(dragged); blocksList.appendChild(dragged); }
+        });
+      }
+
+      function getIds(zone) { return [...zone.querySelectorAll(".block-item")].map(b => b.dataset.id); }
+
+      checkBtn.addEventListener("click", () => {
+        const proIds = getIds(document.getElementById("dropPro"));
+        const persoIds = getIds(document.getElementById("dropPerso"));
+        let score = 0;
+        goodPro.forEach(id => { if (proIds.includes(id)) score++; });
+        goodPerso.forEach(id => { if (persoIds.includes(id)) score++; });
+        scoreBadge.textContent = `Score : ${score} / 16`;
+        if (score <= 6) { feedbackText.textContent = "Résultat insuffisant — Score : " + score + "/16"; feedbackText.className = "feedback bad"; }
+        else if (score <= 12) { feedbackText.textContent = "Résultat correct — Score : " + score + "/16"; feedbackText.className = "feedback medium"; }
+        else { feedbackText.textContent = "Très bon travail — Score : " + score + "/16"; feedbackText.className = "feedback good"; }
+      });
+
+      resetBtn.addEventListener("click", () => location.reload());
+      consignesBtn.addEventListener("click", () => modal.style.display = "flex");
+      closeModal.addEventListener("click", () => modal.style.display = "none");
+      pdfBtn.addEventListener("click", () => {
+        pdfDate.textContent = "Date : " + new Date().toLocaleDateString("fr-FR");
+        pdfHeader.style.display = "block"; window.print();
+        setTimeout(() => pdfHeader.style.display = "none", 500);
+      });
+
+      shuffleBlocks();
+      activateDragAndDrop();
+    });
+  </script>
+</body>
+</html>
